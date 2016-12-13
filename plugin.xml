@@ -26,7 +26,7 @@
 		<source-file src="src/android/PhotoViewer.java" target-dir="src/com/sarriaroman/PhotoViewer" />
 		<source-file src="src/android/PhotoActivity.java" target-dir="src/com/sarriaroman/PhotoViewer" />
 		<source-file src="src/android/layout/activity_photo.xml" target-dir="res/layout" />
-		<source-file src="libs/picasso-2.5.2.jar" target-dir="libs" />
+	        <source-file src="libs/picasso-2.5.2.jar" target-dir="libs/" />
 		<framework src="src/android/photoviewer.gradle" custom="true" type="gradleReference" />
 	</platform>
 	<!--<platform name="ios">
