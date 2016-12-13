@@ -10,21 +10,13 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-/**
- * Class to Open PhotoViewer with the Required Parameters from Cordova
- *
- * - URL
- * - Title
- */
 public class PhotoViewer extends CordovaPlugin {
 
-    public static final int PERMISSION_DENIED_ERROR = 20;
+   //public static final int PERMISSION_DENIED_ERROR = 20;
 
     public static final String WRITE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
     public static final String READ = Manifest.permission.READ_EXTERNAL_STORAGE;
-
     public static final int REQ_CODE = 0;
-
     protected JSONArray args;
     protected CallbackContext callbackContext;
 
@@ -59,8 +51,8 @@ public class PhotoViewer extends CordovaPlugin {
         this.callbackContext.success("");
     }
 
-    @Override
-    public void onRequestPermissionResult(int requestCode, String[] permissions,
+
+   /* public void onRequestPermissionResult(int requestCode, String[] permissions,
                                           int[] grantResults) throws JSONException {
         for(int r:grantResults) {
             if(r == PackageManager.PERMISSION_DENIED) {
@@ -75,5 +67,5 @@ public class PhotoViewer extends CordovaPlugin {
                 break;
         }
 
-    }
+    }*/
 }
