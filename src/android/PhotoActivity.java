@@ -1,6 +1,6 @@
 package com.sarriaroman.PhotoViewer;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
+//import uk.co.senab.photoview.PhotoViewAttacher;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,44 +9,41 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
+import android.widget.Toast;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-
+import com.squareup.picasso.Transformation;
+ 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
 
 public class PhotoActivity extends Activity {
-	private PhotoViewAttacher mAttacher;
-
+	//private PhotoViewAttacher mAttacher;
 	private ImageView photo;
 	private String imageUrl;
-
 	private ImageButton closeBtn;
 	private ImageButton shareBtn;
-
 	private TextView titleTxt;
-
 	private JSONObject options;
 	private int shareBtnVisibility;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(getApplication().getResources().getIdentifier("activity_photo", "layout", getApplication().getPackageName()));
-
 		// Load the Views
 		findViews();
 
@@ -63,9 +60,8 @@ public class PhotoActivity extends Activity {
 		if( !actTitle.equals("") ) {
 			titleTxt.setText(actTitle);
 		}
-
 		imageUrl = this.getIntent().getStringExtra("url");
-
+	
 		// Set Button Listeners
 		closeBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -78,19 +74,21 @@ public class PhotoActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Uri bmpUri = getLocalBitmapUri(photo);
-
 				if (bmpUri != null) {
 				    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-
 				    sharingIntent.setType("image/*");
 				    sharingIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-
 				    startActivity(Intent.createChooser(sharingIntent, "Share"));
 				}
 			}
 		});
 
-		loadImage();
+		try {
+			loadImage();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -101,11 +99,9 @@ public class PhotoActivity extends Activity {
 		// Buttons first
 		closeBtn = (ImageButton) findViewById( getApplication().getResources().getIdentifier("closeBtn", "id", getApplication().getPackageName()) );
 		shareBtn = (ImageButton) findViewById( getApplication().getResources().getIdentifier("shareBtn", "id", getApplication().getPackageName()) );
-
 		// Photo Container
 		photo = (ImageView) findViewById( getApplication().getResources().getIdentifier("photoView", "id", getApplication().getPackageName()) );
-		mAttacher = new PhotoViewAttacher(photo);
-
+		// mAttacher = new PhotoViewAttacher(photo);
 		// Title TextView
 		titleTxt = (TextView) findViewById( getApplication().getResources().getIdentifier("titleTxt", "id", getApplication().getPackageName()) );
 	}
@@ -124,21 +120,21 @@ public class PhotoActivity extends Activity {
 	 */
 	private void hideLoadingAndUpdate() {
 		photo.setVisibility(View.VISIBLE);
-
         shareBtn.setVisibility(shareBtnVisibility);
-
-		mAttacher.update();
+		//mAttacher.update();
 	}
 
 	/**
 	 * Load the image using Picasso
+	 * @throws MalformedURLException 
 	 *
 	 */
-	private void loadImage() {
+	private void loadImage() throws MalformedURLException {
 		if( imageUrl.startsWith("http") ) {
 		Picasso.with(this)
 				.load(imageUrl)
-				.fit()
+				.resize(800, 0)
+				.onlyScaleDown()
 				.into(photo, new com.squareup.picasso.Callback() {
 					@Override
 					public void onSuccess() {
@@ -148,7 +144,6 @@ public class PhotoActivity extends Activity {
 					@Override
 					public void onError() {
 						Toast.makeText(getActivity(), "Error loading image.", Toast.LENGTH_LONG).show();
-
 						finish();
 					}
 				});
@@ -157,13 +152,27 @@ public class PhotoActivity extends Activity {
             byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             photo.setImageBitmap(decodedByte);
-
             hideLoadingAndUpdate();
         } else {
             photo.setImageURI(Uri.parse(imageUrl));
-
             hideLoadingAndUpdate();
         }
+	}
+	
+	
+	public class CropSquareTransformation implements Transformation {
+		  public Bitmap transform(Bitmap source) {
+		    int size = Math.min(source.getWidth(), source.getHeight());
+		    int x = (source.getWidth() - size) / 2;
+		    int y = (source.getHeight() - size) / 2;
+		    Bitmap result = Bitmap.createBitmap(source, x, y, size, size);
+		    if (result != source) {
+		      source.recycle();
+		    }
+		    return result;
+		  }
+
+		  @Override public String key() { return "square()"; }
 	}
 
 	/**
