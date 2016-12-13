@@ -1,6 +1,6 @@
 package com.sarriaroman.PhotoViewer;
 
-//import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoViewAttacher;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,14 +9,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -28,11 +26,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
+
 
 public class PhotoActivity extends Activity {
-	//private PhotoViewAttacher mAttacher;
+	private PhotoViewAttacher mAttacher;
 	private ImageView photo;
 	private String imageUrl;
 	private ImageButton closeBtn;
@@ -101,7 +98,7 @@ public class PhotoActivity extends Activity {
 		shareBtn = (ImageButton) findViewById( getApplication().getResources().getIdentifier("shareBtn", "id", getApplication().getPackageName()) );
 		// Photo Container
 		photo = (ImageView) findViewById( getApplication().getResources().getIdentifier("photoView", "id", getApplication().getPackageName()) );
-		// mAttacher = new PhotoViewAttacher(photo);
+		mAttacher = new PhotoViewAttacher(photo);
 		// Title TextView
 		titleTxt = (TextView) findViewById( getApplication().getResources().getIdentifier("titleTxt", "id", getApplication().getPackageName()) );
 	}
@@ -121,7 +118,7 @@ public class PhotoActivity extends Activity {
 	private void hideLoadingAndUpdate() {
 		photo.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(shareBtnVisibility);
-		//mAttacher.update();
+		mAttacher.update();
 	}
 
 	/**
@@ -133,7 +130,7 @@ public class PhotoActivity extends Activity {
 		if( imageUrl.startsWith("http") ) {
 		Picasso.with(this)
 				.load(imageUrl)
-				.resize(800, 0)
+				.resize(1024, 0)
 				.onlyScaleDown()
 				.into(photo, new com.squareup.picasso.Callback() {
 					@Override
