@@ -20,12 +20,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
  
+import org.apache.cordova.file.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class PhotoActivity extends Activity {
@@ -34,7 +36,7 @@ public class PhotoActivity extends Activity {
 	private String imageUrl;
 	private ImageButton closeBtn;
 	private ImageButton shareBtn;
-	private TextView titleTxt;
+	//private TextView titleTxt;
 	private JSONObject options;
 	private int shareBtnVisibility;
 	@Override
@@ -53,12 +55,12 @@ public class PhotoActivity extends Activity {
 		shareBtn.setVisibility(shareBtnVisibility);
 
 		// Change the Activity Title
-		String actTitle = this.getIntent().getStringExtra("title");
-		if( !actTitle.equals("") ) {
+		//String actTitle = this.getIntent().getStringExtra("title");
+		/*if( !actTitle.equals("") ) {
 			titleTxt.setText(actTitle);
-		}
+		}*/
 		imageUrl = this.getIntent().getStringExtra("url");
-	
+
 		// Set Button Listeners
 		closeBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -70,13 +72,16 @@ public class PhotoActivity extends Activity {
 		shareBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Uri bmpUri = getLocalBitmapUri(photo);
+				String[] mag = {imageUrl};
+				TestFirst(mag);
+				
+				/*Uri bmpUri = getLocalBitmapUri(photo);
 				if (bmpUri != null) {
 				    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
 				    sharingIntent.setType("image/*");
 				    sharingIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
 				    startActivity(Intent.createChooser(sharingIntent, "Share"));
-				}
+				}*/
 			}
 		});
 
@@ -100,7 +105,7 @@ public class PhotoActivity extends Activity {
 		photo = (ImageView) findViewById( getApplication().getResources().getIdentifier("photoView", "id", getApplication().getPackageName()) );
 		mAttacher = new PhotoViewAttacher(photo);
 		// Title TextView
-		titleTxt = (TextView) findViewById( getApplication().getResources().getIdentifier("titleTxt", "id", getApplication().getPackageName()) );
+		//titleTxt = (TextView) findViewById( getApplication().getResources().getIdentifier("titleTxt", "id", getApplication().getPackageName()) );
 	}
 
 	/**
@@ -111,6 +116,29 @@ public class PhotoActivity extends Activity {
 	private Activity getActivity() {
 		return this;
 	}
+	
+	
+	 public static void TestFirst(String[] args){
+		 /* try {
+		   URL source = new URL(args[0]);
+		   String theStrDestDir = "";
+		   File theStockDest = new File(theStrDestDir);
+		   FileUtils.forceMkdir(theStockDest);
+		    
+		   File destination = new File(theStrDestDir + "");
+		    
+		   FileUtils.copyURLToFile(source, destination);
+		   //File file = new File(".");
+		   Toast.makeText(this, "File Downloaded!", Toast.LENGTH_LONG).show();
+
+		   System.out.println("File Downloaded!");
+		  } catch (MalformedURLException e){
+		   e.printStackTrace();
+		  } catch (IOException e){
+		   e.printStackTrace();
+		  }*/
+	 }
+	
 
 	/**
 	 * Hide Loading when showing the photo. Update the PhotoView Attacher
@@ -156,21 +184,6 @@ public class PhotoActivity extends Activity {
         }
 	}
 	
-	
-	public class CropSquareTransformation implements Transformation {
-		  public Bitmap transform(Bitmap source) {
-		    int size = Math.min(source.getWidth(), source.getHeight());
-		    int x = (source.getWidth() - size) / 2;
-		    int y = (source.getHeight() - size) / 2;
-		    Bitmap result = Bitmap.createBitmap(source, x, y, size, size);
-		    if (result != source) {
-		      source.recycle();
-		    }
-		    return result;
-		  }
-
-		  @Override public String key() { return "square()"; }
-	}
 
 	/**
 	 * Create Local Image due to Restrictions
@@ -209,5 +222,5 @@ public class PhotoActivity extends Activity {
 		}
 		return bmpUri;
 	}
-
 }
+
