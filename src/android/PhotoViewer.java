@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -65,9 +66,7 @@ public class PhotoActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				HttpDownloader httpDownloader = new HttpDownloader();
-				//String lrc = httpDownloader.download(imageUrl);
-				File sdDir = Environment.getExternalStorageDirectory();//得到根目錄 
-				int result = httpDownloader.downFile(imageUrl, sdDir+"Download", actTitle);
+				int result = httpDownloader.downFile(imageUrl, "Download/", actTitle);
 				if(result==-1){
 					Toast.makeText(getApplicationContext(), "儲存錯誤", Toast.LENGTH_LONG).show();
 				}else if(result==0){
@@ -165,6 +164,7 @@ public class PhotoActivity extends Activity {
 		
 		public int downFile(String urlStr, String path, String fileName) {
 			InputStream inputStream = null;
+			Log.i("................", "fileName");
 			try {
 				FileUtils fileUtils = new FileUtils();
 				if (fileUtils.isFileExist(path + fileName)) {
