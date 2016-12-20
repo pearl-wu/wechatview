@@ -2,18 +2,14 @@ package com.sarriaroman.PhotoViewer;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 public class PhotoViewer extends CordovaPlugin {
 
    //public static final int PERMISSION_DENIED_ERROR = 20;
-
     public static final String WRITE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
     public static final String READ = Manifest.permission.READ_EXTERNAL_STORAGE;
     public static final int REQ_CODE = 0;
@@ -44,7 +40,7 @@ public class PhotoViewer extends CordovaPlugin {
         Intent i = new Intent(this.cordova.getActivity(), com.sarriaroman.PhotoViewer.PhotoActivity.class);
 
         i.putExtra("url", this.args.getString(0));
-       // i.putExtra("title", this.args.getString(1));
+        i.putExtra("title", this.args.getString(1));
         i.putExtra("options", this.args.optJSONObject(2).toString());
 
         this.cordova.getActivity().startActivity(i);
