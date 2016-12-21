@@ -4,31 +4,28 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.content.Intent;
 import android.net.Uri;
-import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
- 
-import org.apache.cordova.file.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 
 public class PhotoActivity extends Activity {
 	private PhotoViewAttacher mAttacher;
@@ -36,7 +33,6 @@ public class PhotoActivity extends Activity {
 	private String imageUrl;
 	private ImageButton closeBtn;
 	private ImageButton shareBtn;
-	//private TextView titleTxt;
 	private JSONObject options;
 	private int shareBtnVisibility;
 	@Override
@@ -55,10 +51,7 @@ public class PhotoActivity extends Activity {
 		shareBtn.setVisibility(shareBtnVisibility);
 
 		// Change the Activity Title
-		//String actTitle = this.getIntent().getStringExtra("title");
-		/*if( !actTitle.equals("") ) {
-			titleTxt.setText(actTitle);
-		}*/
+		final String actTitle = this.getIntent().getStringExtra("title");
 		imageUrl = this.getIntent().getStringExtra("url");
 
 		// Set Button Listeners
@@ -72,16 +65,15 @@ public class PhotoActivity extends Activity {
 		shareBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String[] mag = {imageUrl};
-				TestFirst(mag);
-				
-				/*Uri bmpUri = getLocalBitmapUri(photo);
-				if (bmpUri != null) {
-				    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-				    sharingIntent.setType("image/*");
-				    sharingIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-				    startActivity(Intent.createChooser(sharingIntent, "Share"));
-				}*/
+				HttpDownloader httpDownloader = new HttpDownloader();
+				int result = httpDownloader.downFile(imageUrl, "Download/", actTitle);
+				if(result==-1){
+					Toast.makeText(getApplicationContext(), "儲存錯誤", Toast.LENGTH_LONG).show();
+				}else if(result==0){
+					Toast.makeText(getApplicationContext(), "儲存成功", Toast.LENGTH_LONG).show();
+				}else if(result==1){
+					Toast.makeText(getApplicationContext(), "已儲存", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 
@@ -108,52 +100,13 @@ public class PhotoActivity extends Activity {
 		//titleTxt = (TextView) findViewById( getApplication().getResources().getIdentifier("titleTxt", "id", getApplication().getPackageName()) );
 	}
 
-	/**
-	 * Get the current Activity
-	 *
-	 * @return
-	 */
-	private Activity getActivity() {
-		return this;
-	}
-	
-	
-	 public static void TestFirst(String[] args){
-		 /* try {
-		   URL source = new URL(args[0]);
-		   String theStrDestDir = "";
-		   File theStockDest = new File(theStrDestDir);
-		   FileUtils.forceMkdir(theStockDest);
-		    
-		   File destination = new File(theStrDestDir + "");
-		    
-		   FileUtils.copyURLToFile(source, destination);
-		   //File file = new File(".");
-		   Toast.makeText(this, "File Downloaded!", Toast.LENGTH_LONG).show();
 
-		   System.out.println("File Downloaded!");
-		  } catch (MalformedURLException e){
-		   e.printStackTrace();
-		  } catch (IOException e){
-		   e.printStackTrace();
-		  }*/
-	 }
-	
-
-	/**
-	 * Hide Loading when showing the photo. Update the PhotoView Attacher
-	 */
 	private void hideLoadingAndUpdate() {
 		photo.setVisibility(View.VISIBLE);
         shareBtn.setVisibility(shareBtnVisibility);
 		mAttacher.update();
 	}
 
-	/**
-	 * Load the image using Picasso
-	 * @throws MalformedURLException 
-	 *
-	 */
 	private void loadImage() throws MalformedURLException {
 		if( imageUrl.startsWith("http") ) {
 		Picasso.with(this)
@@ -168,7 +121,7 @@ public class PhotoActivity extends Activity {
 
 					@Override
 					public void onError() {
-						Toast.makeText(getActivity(), "Error loading image.", Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(), "Error loading image.", Toast.LENGTH_LONG).show();
 						finish();
 					}
 				});
@@ -184,43 +137,121 @@ public class PhotoActivity extends Activity {
         }
 	}
 	
-
-	/**
-	 * Create Local Image due to Restrictions
-	 *
-	 * @param imageView
-	 *
-	 * @return
-	 */
-	public Uri getLocalBitmapUri(ImageView imageView) {
-		Drawable drawable = imageView.getDrawable();
-		Bitmap bmp = null;
-
-		if (drawable instanceof BitmapDrawable){
-			bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-		} else {
-			return null;
+	public class HttpDownloader {
+		private URL url = null;
+		public String download(String urlStr) {
+			StringBuffer sb = new StringBuffer();
+			String line = null;
+			BufferedReader buffer = null;
+			try {
+				url = new URL(urlStr);
+				HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+				buffer = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+				while ((line = buffer.readLine()) != null) {
+					sb.append(line);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					buffer.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return sb.toString();
 		}
-
-		// Store image to default external storage directory
-		Uri bmpUri = null;
-		try {
-			File file =  new File(
-					Environment.getExternalStoragePublicDirectory(
-						Environment.DIRECTORY_DOWNLOADS
-					), "share_image_" + System.currentTimeMillis() + ".png");
-
-			file.getParentFile().mkdirs();
-
-			FileOutputStream out = new FileOutputStream(file);
-			bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-			out.close();
-
-			bmpUri = Uri.fromFile(file);
-		} catch (IOException e) {
-			e.printStackTrace();
+		
+		public int downFile(String urlStr, String path, String fileName) {
+			InputStream inputStream = null;
+			Log.i("................", "fileName");
+			try {
+				FileUtils fileUtils = new FileUtils();
+				if (fileUtils.isFileExist(path + fileName)) {
+					return 1;
+				} else {
+					inputStream = getInputStreamFromUrl(urlStr);
+					File resultFile = fileUtils.write2SDFromInput(path,fileName, inputStream);
+					if (resultFile == null) {
+						return -1;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return -1;
+			} finally {
+				try {
+					inputStream.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return 0;
 		}
-		return bmpUri;
-	}
+		
+		public InputStream getInputStreamFromUrl(String urlStr) throws MalformedURLException, IOException {
+			url = new URL(urlStr);
+			HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+			InputStream inputStream = urlConn.getInputStream();
+			return inputStream;
+		}
+		
+		public class FileUtils {
+			private String SDPATH;
+			public String getSDPATH() {
+				return SDPATH;
+			}
+			public FileUtils() {
+				//得到當前外部存放裝置的目錄	// /SDCARD
+				SDPATH = Environment.getExternalStorageDirectory() + "/";
+			}
+			/*** 在SD卡上創建檔	* @throws IOException*/
+			public File creatSDFile(String fileName) throws IOException {
+				File file = new File(SDPATH + fileName);
+				file.createNewFile();
+				return file;
+			}
+
+			/*** 在SD卡上創建目錄* @param dirName*/
+			public File creatSDDir(String dirName) {
+				File dir = new File(SDPATH + dirName);
+				dir.mkdirs();
+				return dir;
+			}
+
+			/*** 判斷SD卡上的資料夾是否存在*/
+			public boolean isFileExist(String fileName){
+				File file = new File(SDPATH + fileName);
+				return file.exists();
+			}
+
+			/*** 將一個InputStream裡面的資料寫入到SD卡中*/
+			public File write2SDFromInput(String path,String fileName,InputStream input){
+				File file = null;
+				OutputStream output = null;
+				try{
+					creatSDDir(path);
+					file = creatSDFile(path + fileName);
+					output = new FileOutputStream(file);
+					byte buffer [] = new byte[4 * 1024];
+					while((input.read(buffer)) != -1){
+						output.write(buffer);
+					}
+					output.flush();
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+				finally{
+					try{
+						output.close();
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				return file;
+			}
+		}		
+	}	
 }
-
