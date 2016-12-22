@@ -27,7 +27,24 @@
 		<source-file src="src/android/PhotoActivity.java" target-dir="src/com/sarriaroman/PhotoViewer" />
 		<source-file src="src/android/layout/activity_photo.xml" target-dir="res/layout" />
 	        <source-file src="libs/picasso-2.5.2.jar" target-dir="libs/" />
-		<framework src="src/android/photoviewer.gradle" custom="true" type="gradleReference" />
+		<source-file src="src/android/uk/co/senab/photoview/Compat.java" target-dir="src/" />
+		<source-file src="src/android/uk/co/senab/photoview/DefaultOnDoubleTapListener.java" target-dir="src/uk/co/senab/photoview/" />
+		<source-file src="src/android/uk/co/senab/photoview/IPhotoView.java" target-dir="src/uk/co/senab/photoview/" />
+		<source-file src="src/android/uk/co/senab/photoview/PhotoView.java" target-dir="src/uk/co/senab/photoview/" />
+		<source-file src="src/android/uk/co/senab/photoview/PhotoViewAttacher.java" target-dir="src/uk/co/senab/photoview/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/CupcakeGestureDetector.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/EclairGestureDetector.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/FroyoGestureDetector.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/GestureDetector.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/OnGestureListener.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/gestures/VersionedGestureDetector.java" target-dir="src/uk/co/senab/photoview/gestures/" />
+		<source-file src="src/android/uk/co/senab/photoview/log/Logger.java" target-dir="src/uk/co/senab/photoview/log/" />
+		<source-file src="src/android/uk/co/senab/photoview/log/LoggerDefault.java" target-dir="src/uk/co/senab/photoview/log/" />
+		<source-file src="src/android/uk/co/senab/photoview/log/LogManager.java" target-dir="src/uk/co/senab/photoview/log/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/GingerScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/IcsScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/PreGingerScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/ScrollerProxy.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
 	</platform>
 	<!--<platform name="ios">
 		<config-file parent="/*" target="config.xml">
