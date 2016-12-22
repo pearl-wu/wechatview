@@ -42,10 +42,10 @@
 		<source-file src="src/android/uk/co/senab/photoview/log/Logger.java" target-dir="src/uk/co/senab/photoview/log/" />
 		<source-file src="src/android/uk/co/senab/photoview/log/LoggerDefault.java" target-dir="src/uk/co/senab/photoview/log/" />
 		<source-file src="src/android/uk/co/senab/photoview/log/LogManager.java" target-dir="src/uk/co/senab/photoview/log/" />
-		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/GingerScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
-		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/IcsScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
-		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/PreGingerScroller.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
-		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/ScrollerProxy.java" target-dir="src/uk/co/senab/photoview/GingerScroller/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/GingerScroller.java" target-dir="src/uk/co/senab/photoview/scrollerproxy/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/IcsScroller.java" target-dir="src/uk/co/senab/photoview/scrollerproxy/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/PreGingerScroller.java" target-dir="src/uk/co/senab/photoview/scrollerproxy/" />
+		<source-file src="src/android/uk/co/senab/photoview/scrollerproxy/ScrollerProxy.java" target-dir="src/uk/co/senab/photoview/scrollerproxy/" />
 	</platform>
 	<!--<platform name="ios">
 		<config-file parent="/*" target="config.xml">
